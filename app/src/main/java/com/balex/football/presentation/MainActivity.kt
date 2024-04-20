@@ -1,8 +1,14 @@
 package com.balex.football.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.balex.football.databinding.ActivityMainBinding
+import com.balex.football.data.api.ApiFactory.apiService
+import com.balex.football.data.api.ApiFactory.apiServicePlayers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,15 +22,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val client = OkHttpClient()
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                val data = apiServicePlayers.getPlayers("39", "2020")
+                Log.d(TAG, data.toString())
 
-        val request = Request.Builder()
-            .url("https://api-football-v1.p.rapidapi.com/v3/players?id=276&season=2020")
-            .get()
-            .addHeader("X-RapidAPI-Key", "3d3df3e10emsh9e37fc01a2d902cp11030ajsnb6bc6b355c41")
-            .addHeader("X-RapidAPI-Host", "api-football-v1.p.rapidapi.com")
-            .build()
+            } catch (e: Exception) {
+                Log.d(TAG, "error: $e")
+            }
+        }
 
-        val response = client.newCall(request).execute()
+
     }
 }
